@@ -35,10 +35,12 @@ const TICKER = [
   "PDF TO JPG",
   "PDF TO PNG",
   "PDF TO WEBP",
+  "NO UPLOAD",
   "216 DPI PRINT",
   "ZIP EXPORT",
-  "LOSSLESS CRISP",
+  "ZERO SERVER",
   "100% PRIVATE",
+  "NO PAGE LIMITS",
 ];
 
 const STEPS = [
@@ -68,16 +70,24 @@ const FAQ = [
     a: "Drop your PDF into Rasterpress, pick JPG, PNG or WebP, choose a resolution up to 216 DPI, and press convert. Every page becomes a downloadable image in seconds — grab pages individually or all of them as a ZIP. It's completely free and unlimited, with no sign-up, no watermarks, no file-size caps, and no daily quotas.",
   },
   {
-    q: "Are my PDF files uploaded to a server?",
-    a: "No. This PDF to image converter runs entirely inside your browser using PDF.js and the Canvas API. Your documents never leave your device, which makes Rasterpress private by architecture — not just by policy.",
+    q: "Does Rasterpress upload my files to a server?",
+    a: "No. Rasterpress is 100% client-side — it converts your PDF entirely inside your browser. Your files never leave your device and are never sent to any server, making it the most private PDF to image converter available online.",
   },
   {
-    q: "Which output should I choose — JPG, PNG or WebP?",
-    a: "Choose JPG for the smallest, most compatible files for sharing. Choose PNG for lossless, pixel-perfect page images with transparency preserved. Choose WebP for modern compression that's up to 30% smaller than JPG at similar quality.",
+    q: "Is there a file size limit or page limit?",
+    a: "None at all. Rasterpress has no file-size cap, no page limit, and no daily conversion quota. Convert PDFs of any size with any number of pages, completely free, as many times as you need.",
   },
   {
-    q: "What resolution do the converted images have?",
-    a: "You can render pages at 1× (72 DPI), 1.5× (108 DPI), 2× (144 DPI) or 3× (216 DPI). A standard A4 or Letter page at 3× becomes a sharp, print-ready image of roughly 2550 × 3300 pixels.",
+    q: "Which output format should I choose — JPG, PNG or WebP?",
+    a: "Choose JPG for the smallest, most compatible files for sharing. Choose PNG for lossless, pixel-perfect output with transparency preserved. Choose WebP for modern compression that's up to 30% smaller than JPG at similar quality — ideal for web publishing.",
+  },
+  {
+    q: "What resolution and quality can I get?",
+    a: "You can render pages at 1× (72 DPI), 1.5× (108 DPI), 2× (144 DPI) or 3× (216 DPI). A standard A4 or Letter page at 3× becomes a sharp, print-ready image of roughly 2550 × 3300 pixels. You can also fine-tune JPG/WebP compression with an adjustable quality slider.",
+  },
+  {
+    q: "Can I download all converted pages as a ZIP?",
+    a: "Yes. After converting, click the ZIP export button to download all pages as a single archive in one click. You can also select or exclude individual pages before converting.",
   },
 ];
 
@@ -314,12 +324,12 @@ export default function Hero({ loading, error, onFile, onClearError }: HeroProps
 
       {/* ------------------------------------------------ ticker */}
       <div className="border-y border-ink bg-ink py-3.5 text-paper">
-        <div className="flex overflow-hidden">
-          <div className="animate-marquee flex w-max items-center gap-8 pr-8">
+        <div className="flex overflow-hidden whitespace-nowrap">
+          <div className="animate-marquee flex shrink-0 w-max items-center gap-8 pr-8">
             {[...TICKER, ...TICKER, ...TICKER, ...TICKER].map((t, i) => (
               <span
                 key={i}
-                className="flex items-center gap-8 font-mono text-xs tracking-[0.3em]"
+                className="inline-flex items-center gap-8 font-mono text-xs tracking-[0.3em]"
               >
                 {t}
                 <Asterisk size={14} className="text-accent" />
@@ -414,8 +424,7 @@ export default function Hero({ loading, error, onFile, onClearError }: HeroProps
                 Rasterpress
               </p>
               <p className="mt-3 max-w-sm text-sm leading-relaxed text-paper/70">
-                A free, unlimited PDF to image converter. Built on PDF.js — every
-                file is processed on your device and never touches a server.
+                A free, unlimited PDF to image converter. Every file is processed on your device and never touches a server.
               </p>
             </div>
             <div className="font-mono text-[11px] leading-loose tracking-[0.18em] text-paper/60">
