@@ -1,0 +1,149 @@
+@import "tailwindcss";
+
+@theme {
+  --color-paper: #f5f1e8;
+  --color-cream: #fcfaf4;
+  --color-ink: #1b1813;
+  --color-ink2: #3a352c;
+  --color-stone: #8a8375;
+  --color-accent: #ff4a1c;
+  --color-ember: #d93a0f;
+  --color-line: rgba(27, 24, 19, 0.14);
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-paper text-ink font-sans antialiased overflow-x-hidden;
+}
+
+::selection {
+  background: #ff4a1c;
+  color: #fcfaf4;
+}
+
+/* ------- film grain overlay ------- */
+.grain {
+  position: fixed;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  pointer-events: none;
+  z-index: 90;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* ------- checkerboard for transparent images ------- */
+.checker {
+  background: repeating-conic-gradient(#eae4d6 0% 25%, #f8f4ec 0% 50%) 0 0 / 18px
+    18px;
+}
+
+/* ------- marquee ------- */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 26s linear infinite;
+}
+
+/* ------- skeleton shimmer ------- */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+.shimmer {
+  background: linear-gradient(
+    110deg,
+    rgba(27, 24, 19, 0.05) 8%,
+    rgba(27, 24, 19, 0.14) 18%,
+    rgba(27, 24, 19, 0.05) 33%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* ------- dashed dropzone border animation ------- */
+@keyframes dash-rotate {
+  to {
+    background-position: 24px 0;
+  }
+}
+.dash-anim {
+  background-image: repeating-linear-gradient(
+    90deg,
+    #ff4a1c 0 8px,
+    transparent 8px 16px
+  );
+  background-size: 24px 2px;
+  background-repeat: repeat-x;
+  animation: dash-rotate 0.6s linear infinite;
+}
+
+/* ------- press range slider (dark panel) ------- */
+.press-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+.press-range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--range-track, rgba(252, 250, 244, 0.16));
+}
+.press-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  margin-top: -6px;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #fcfaf4;
+  border: 3px solid #ff4a1c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease;
+}
+.press-range::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+.press-range::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--range-track, rgba(252, 250, 244, 0.16));
+}
+.press-range::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: #fcfaf4;
+  border: 3px solid #ff4a1c;
+}
+
+/* ------- thin scrollbars ------- */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(27, 24, 19, 0.25);
+  border-radius: 8px;
+  border: 3px solid #f5f1e8;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
