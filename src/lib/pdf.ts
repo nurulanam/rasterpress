@@ -1,5 +1,5 @@
 import * as pdfjsLib from "pdfjs-dist";
-import PdfWorker from "pdfjs-dist/build/pdf.worker.min.mjs?worker&inline";
+import pdfWorkerUrl from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 import JSZip from "jszip";
 
 export type PDFDocument = pdfjsLib.PDFDocumentProxy;
@@ -65,12 +65,9 @@ let workerReady = false;
 
 function ensureWorker() {
   if (workerReady) return;
-  try {
-    const worker = new PdfWorker();
-    pdfjsLib.GlobalWorkerOptions.workerPort = worker;
-  } catch {
-    // pdf.js will transparently fall back to a main-thread fake worker.
-  }
+  // Set the worker source URL — Vite emits this as a separate file so it is
+  // fetched and cached independently (not inlined into the main bundle).
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
   workerReady = true;
 }
 

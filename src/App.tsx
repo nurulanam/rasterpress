@@ -1,11 +1,14 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowLeft, FileText, ShieldCheck } from "lucide-react";
 import Nav from "./components/Nav";
 import Hero from "./components/Hero";
-import Controls from "./components/Controls";
-import PageCard from "./components/PageCard";
-import BottomBar from "./components/BottomBar";
+
+// Lazy-load workspace components — only needed after a PDF is loaded
+const Controls = lazy(() => import("./components/Controls"));
+const PageCard = lazy(() => import("./components/PageCard"));
+const BottomBar = lazy(() => import("./components/BottomBar"));
+
 import {
   FORMATS,
   basePageDims,
@@ -325,123 +328,125 @@ export default function App() {
             />
           </motion.div>
         ) : (
-          <motion.div
-            key="workspace"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30, transition: { duration: 0.35 } }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <section className="mx-auto max-w-7xl px-4 pb-56 pt-24 sm:px-6 sm:pt-28">
-              {/* file header */}
-              <motion.div
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                className="mb-8 flex flex-wrap items-center gap-4"
-              >
-                <button
-                  onClick={reset}
-                  disabled={phase === "converting"}
-                  className="group flex items-center gap-2 rounded-full border border-line bg-cream px-4 py-2 font-mono text-[10.5px] tracking-[0.18em] text-ink2 transition-all hover:border-ink/40 hover:text-ink disabled:opacity-40"
+          <Suspense fallback={null}>
+            <motion.div
+              key="workspace"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 30, transition: { duration: 0.35 } }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <section className="mx-auto max-w-7xl px-4 pb-56 pt-24 sm:px-6 sm:pt-28">
+                {/* file header */}
+                <motion.div
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                  className="mb-8 flex flex-wrap items-center gap-4"
                 >
-                  <ArrowLeft
-                    size={14}
-                    className="transition-transform group-hover:-translate-x-0.5"
-                  />
-                  NEW FILE
-                </button>
-
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-ink text-paper">
-                    <FileText size={17} />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="max-w-[280px] truncate text-sm font-semibold tracking-tight sm:max-w-md">
-                      {fileName}
-                    </p>
-                    <p className="mt-0.5 font-mono text-[10px] tracking-[0.18em] text-stone">
-                      {pageCount} PAGES · {formatBytes(fileSize)}
-                    </p>
-                  </div>
-                </div>
-
-                <span className="ml-auto hidden items-center gap-1.5 rounded-full border border-line bg-cream px-3 py-1.5 font-mono text-[9.5px] tracking-[0.14em] text-ink2 sm:flex">
-                  <ShieldCheck size={12} className="text-accent" />
-                  PROCESSED IN THIS TAB ONLY
-                </span>
-              </motion.div>
-
-              <div className="grid items-start gap-6 lg:grid-cols-[340px_1fr] lg:gap-8">
-                <Controls
-                  format={format}
-                  onFormat={changeFormat}
-                  webpOk={webpOk}
-                  quality={quality}
-                  onQuality={changeQuality}
-                  scale={scale}
-                  onScale={changeScale}
-                  estimate={estimate}
-                  selectedCount={selected.size}
-                  totalCount={pageCount}
-                  onSelectAll={selectAll}
-                  onSelectNone={selectNone}
-                  disabled={phase === "converting"}
-                />
-
-                <div>
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                    className="mb-4 flex items-baseline justify-between"
+                  <button
+                    onClick={reset}
+                    disabled={phase === "converting"}
+                    className="group flex items-center gap-2 rounded-full border border-line bg-cream px-4 py-2 font-mono text-[10.5px] tracking-[0.18em] text-ink2 transition-all hover:border-ink/40 hover:text-ink disabled:opacity-40"
                   >
-                    <h2 className="font-display text-2xl font-semibold italic tracking-tight">
-                      Pages
-                    </h2>
-                    <p className="font-mono text-[10px] tracking-[0.2em] text-stone">
-                      CLICK TO INCLUDE / EXCLUDE
-                    </p>
-                  </motion.div>
+                    <ArrowLeft
+                      size={14}
+                      className="transition-transform group-hover:-translate-x-0.5"
+                    />
+                    NEW FILE
+                  </button>
 
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 2xl:grid-cols-4">
-                    {Array.from({ length: pageCount }, (_, i) => i + 1).map(
-                      (page, idx) => (
-                        <PageCard
-                          key={`${fileName}-${page}`}
-                          page={page}
-                          index={idx}
-                          selected={selected.has(page)}
-                          converting={renderingPage === page}
-                          result={results[page]}
-                          getThumb={getThumb}
-                          onToggle={togglePage}
-                        />
-                      ),
-                    )}
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-ink text-paper">
+                      <FileText size={17} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="max-w-[280px] truncate text-sm font-semibold tracking-tight sm:max-w-md">
+                        {fileName}
+                      </p>
+                      <p className="mt-0.5 font-mono text-[10px] tracking-[0.18em] text-stone">
+                        {pageCount} PAGES · {formatBytes(fileSize)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="ml-auto hidden items-center gap-1.5 rounded-full border border-line bg-cream px-3 py-1.5 font-mono text-[9.5px] tracking-[0.14em] text-ink2 sm:flex">
+                    <ShieldCheck size={12} className="text-accent" />
+                    PROCESSED IN THIS TAB ONLY
+                  </span>
+                </motion.div>
+
+                <div className="grid items-start gap-6 lg:grid-cols-[340px_1fr] lg:gap-8">
+                  <Controls
+                    format={format}
+                    onFormat={changeFormat}
+                    webpOk={webpOk}
+                    quality={quality}
+                    onQuality={changeQuality}
+                    scale={scale}
+                    onScale={changeScale}
+                    estimate={estimate}
+                    selectedCount={selected.size}
+                    totalCount={pageCount}
+                    onSelectAll={selectAll}
+                    onSelectNone={selectNone}
+                    disabled={phase === "converting"}
+                  />
+
+                  <div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.5 }}
+                      className="mb-4 flex items-baseline justify-between"
+                    >
+                      <h2 className="font-display text-2xl font-semibold italic tracking-tight">
+                        Pages
+                      </h2>
+                      <p className="font-mono text-[10px] tracking-[0.2em] text-stone">
+                        CLICK TO INCLUDE / EXCLUDE
+                      </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 2xl:grid-cols-4">
+                      {Array.from({ length: pageCount }, (_, i) => i + 1).map(
+                        (page, idx) => (
+                          <PageCard
+                            key={`${fileName}-${page}`}
+                            page={page}
+                            index={idx}
+                            selected={selected.has(page)}
+                            converting={renderingPage === page}
+                            result={results[page]}
+                            getThumb={getThumb}
+                            onToggle={togglePage}
+                          />
+                        ),
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </section>
+              </section>
 
-            <BottomBar
-              phase={phase}
-              selected={selected.size}
-              total={pageCount}
-              format={format}
-              scale={scale}
-              quality={quality}
-              progress={progress}
-              resultsCount={resultsList.length}
-              resultsSize={resultsSize}
-              failed={failed}
-              zipping={zipping}
-              zipPct={zipPct}
-              onConvert={() => convertRef.current()}
-              onZip={zipAll}
-              onReset={reset}
-            />
-          </motion.div>
+              <BottomBar
+                phase={phase}
+                selected={selected.size}
+                total={pageCount}
+                format={format}
+                scale={scale}
+                quality={quality}
+                progress={progress}
+                resultsCount={resultsList.length}
+                resultsSize={resultsSize}
+                failed={failed}
+                zipping={zipping}
+                zipPct={zipPct}
+                onConvert={() => convertRef.current()}
+                onZip={zipAll}
+                onReset={reset}
+              />
+            </motion.div>
+          </Suspense>
         )}
       </AnimatePresence>
     </div>
